@@ -1,0 +1,142 @@
+
+header {
+    background-color: #fff;
+    padding: 20px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px; /* Add padding to nav container */
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-decoration: none;
+    color: #333;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav li {
+    margin-left: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+}
+
+.signup-btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+/* Basic styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f8f8; /* Light gray background */
+}
+
+/* Header styles (same as previous examples) */
+header {
+    background-color: #fff;
+    padding: 20px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ... (rest of the header styles remain the same) */
+
+/* Main content styles */
+main {
+    padding: 40px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 160px); /* Ensure minimum height */
+}
+
+.search-area {
+    text-align: center;
+}
+
+.search-area h1 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 0 auto; /* Center the search box */
+    max-width: 500px; /* Set a maximum width */
+    width: 90%; /* Occupy most of the width on smaller screens */
+    margin-bottom: 20px; /* Add margin below */
+}
+
+.search-icon {
+    padding-right: 10px; /* Add space between icon and input */
+}
+
+.search-icon img {
+    width: 20px;
+    height: 20px;
+}
+
+.search-box input {
+    flex-grow: 1; /* Make input take up available space */
+    border: none;
+    outline: none; /* Remove default outline */
+    font-size: 1rem;
+}
+
+.search-button {
+    background-color: #1f2937; /* Dark background color */
+    color: #fff;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.search-button:hover {
+    background-color: #111827; /* Darker on hover */
+}
+
+/* Footer styles (same as previous examples) */
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+}
