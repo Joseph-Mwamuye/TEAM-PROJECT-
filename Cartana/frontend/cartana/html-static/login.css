@@ -1,0 +1,185 @@
+/* style.css */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* Light gray background */
+    color: #333; /* Dark gray text color */
+}
+
+header {
+    background-color: #fff; /* White header background */
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav li {
+    margin-right: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s; /* Smooth color transition on hover */
+}
+
+nav a:hover {
+    color: #007bff; /* Blue hover color */
+}
+
+.signup-btn {
+    background-color: #007bff; /* Blue button background */
+    color: #fff; /* White text color */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.signup-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+main {
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align items to the top */
+    min-height: calc(100vh - 160px); /* Ensure main takes up full viewport height */
+}
+
+
+.signup-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    max-width: 960px;
+    width: 90%; /* Occupy most of the width on smaller screens */
+    align-items: center; /* Vertically center content */
+}
+
+.image-area {
+    flex: 1; /* Equal width for image area */
+    padding-right: 20px; /* Add some spacing between image and form */
+    text-align: center; /* Center the image */
+}
+
+.image-area img {
+    max-width: 100%;
+    height: auto;
+}
+
+.form-area {
+    flex: 1; /* Equal width for form area */
+}
+
+.form-area h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.form-area p {
+    margin-bottom: 15px;
+    color: #666; /* Slightly lighter gray for secondary text */
+}
+
+.google-signup {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ddd; /* Light gray border */
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-flex; /* Use flexbox for icon and text alignment */
+    align-items: center;
+    margin-bottom: 20px;
+    transition: background-color 0.3s;
+}
+
+.google-signup img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.google-signup:hover {
+    background-color: #f0f0f0; /* Slightly darker background on hover */
+}
+
+.or-text {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.form-area input {
+    width: calc(100% - 22px); /* Account for padding and border */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+.signin-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.signin-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.signin-link a:hover {
+    text-decoration: underline;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .signup-container {
+        flex-direction: column; /* Stack image and form vertically */
+        align-items: center; /* Center content horizontally */
+    }
+
+    .image-area {
+        padding-right: 0;
+        margin-bottom: 20px; /* Add spacing below image on smaller screens */
+    }
+
+    nav ul {
+        flex-direction: column; /* Stack nav items vertically */
+        text-align: center; /* Center the text */
+    }
+
+    nav li {
+        margin: 10px 0; /* Add margin top and bottom */
+    }
+}

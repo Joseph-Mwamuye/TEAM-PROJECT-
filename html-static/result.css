@@ -1,0 +1,171 @@
+header {
+    background-color: #fff;
+    padding: 20px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px; /* Add padding to nav container */
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-decoration: none;
+    color: #333;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav li {
+    margin-left: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+}
+
+.signup-btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Basic styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f8f8; /* Light gray background */
+}
+
+/* Header styles (same as previous examples) */
+header {
+    background-color: #fff;
+    padding: 20px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ... (rest of the header styles remain the same) */
+
+/* Main content styles */
+main {
+    padding: 40px 0;
+    display: flex;
+    flex-direction: column; /* Align items vertically */
+    align-items: center; /* Center horizontally */
+    min-height: calc(100vh - 160px); /* Ensure minimum height */
+}
+
+/* Search Area */
+.search-area {
+    width: 100%; /* Occupy full width */
+    max-width: 960px; /* Set max width */
+    margin: 0 auto; /* Center */
+    padding: 20px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 0 auto; /* Center the search box */
+    max-width: 500px; /* Set a maximum width */
+    width: 90%; /* Occupy most of the width on smaller screens */
+}
+
+/* ... (rest of the search box styles remain the same) */
+
+/* Results Area */
+.results-area {
+    width: 100%; /* Occupy full width */
+    max-width: 960px; /* Set max width */
+    margin: 20px auto; /* Center and add margin top */
+    padding: 20px;
+}
+
+.results-area h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.sort-options {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.sort-options label {
+    margin-right: 10px;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+    grid-gap: 20px;
+}
+
+.product-card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden; /* Hide overflowing image */
+}
+
+.product-card img {
+    width: 100%;
+    height: auto;
+    display: block; /* Prevent small space below image */
+}
+
+.product-details {
+    padding: 20px;
+}
+
+.product-price {
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block; /* Make price a block element */
+}
+
+.product-links {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Distribute space between links */
+}
+
+.product-links a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.site-name {
+    color: #666;
+}
+
+/* Footer styles (same as previous examples)
