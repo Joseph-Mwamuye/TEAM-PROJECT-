@@ -1,0 +1,26 @@
+.features {
+    text-align: center;
+    margin-top: 4rem;
+    font-family: "Poppins";
+}
+
+.features h2 {
+    font-size: 2rem;
+    margin-bottom: 1px;
+}
+
+.site-logos {
+    display: flex;
+    padding: 1.5rem;
+    margin-right: 8rem;
+    margin-left: 8rem;
+    border-radius: 8px;
+    background-color: #111927;
+    justify-content: center;
+}
+
+.site-logos img {
+    margin: 8rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}

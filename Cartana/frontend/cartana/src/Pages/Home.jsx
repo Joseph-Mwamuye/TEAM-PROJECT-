@@ -1,11 +1,18 @@
-import React from 'react'
+import React from "react";
+import NavBar from "../components/NavBar";
+import HeroSection from "../sections/HomePageSections/HeroSection";
+import LogoCard from "../sections/HomePageSections/LogoCard";
+import Footer from "../components/Footer";
 
 const Home = () => {
   return (
-    
-        <h1>Hello Cartana</h1>
-    
-  )
-}
+    <>
+      <NavBar />
+      <HeroSection />
+      <LogoCard />
+      <Footer />
+    </>
+  );
+};
 
-export default Home
+export default Home;

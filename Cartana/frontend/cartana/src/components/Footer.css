@@ -1,0 +1,12 @@
+
+
+footer {
+    padding: 20px 0;
+    text-align: center;
+    color: black;
+    font-family: 'Rubik Doodle Shadow', sans-serif;
+    src: url('./assets/Fonts/RubikDoodleShadow-Regular.ttf') format('truetype');
+    font-size: 43px;
+    font-weight: 400;
+}
+
