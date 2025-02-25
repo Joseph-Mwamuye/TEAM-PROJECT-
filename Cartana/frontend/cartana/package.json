@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
   "main": "eslint.config.js",
-  "devDependencies": {},
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -12,5 +11,8 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@clerk/clerk-react": "^5.23.0"
+  }
 }
