@@ -48,28 +48,7 @@ margin-bottom: 30px;
   display: flex;
 }
 
-.try-it-out,
-.create-account {
-  padding: 15px 30px;
-  font-family: "Poppins";
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-}
 
-.try-it-out {
-  background-color: #191919;
-  color: #fff;
-  width: 174px;
-  margin-right: 10px;
-}
-
-.create-account {
-  background-color: transparent;
-  border: 1px solid #007bff;
-  color: #007bff;
-}
 
 .hero-image {
   width: 499px; /* Adjust image width as needed */
