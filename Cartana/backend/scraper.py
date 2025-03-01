@@ -4,7 +4,7 @@ import re
 from urllib.parse import quote_plus, urljoin
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 import time
 import random
 
@@ -21,6 +21,24 @@ class ProductScraper:
         }
         self.amazon_base_url = "https://www.amazon.com"
         self.ebay_base_url = "https://www.ebay.com"
+        self.jumia_base_url = "https://www.jumia.co.ke"
+        self.kilimall_base_url = "https://www.kilimall.co.ke"
+        
+        # Get current USD to KES exchange rate
+        self.usd_to_kes = self.get_exchange_rate()
+        print(f"Current USD to KES exchange rate: {self.usd_to_kes}")
+        
+    def get_exchange_rate(self) -> float:
+        """Get current USD to KES exchange rate."""
+        try:
+            # Using a free currency API
+            response = requests.get("https://open.er-api.com/v6/latest/USD", timeout=10)
+            data = response.json()
+            return data["rates"]["KES"]
+        except Exception as e:
+            print(f"Error fetching exchange rate: {e}")
+            # Fallback to an approximate exchange rate if the API fails
+            return 130.0  # Example fallback rate (update as needed)
         
     def make_request(self, url: str) -> Optional[str]:
         """Make HTTP request with proper error handling and debugging."""
@@ -41,22 +59,102 @@ class ProductScraper:
         except requests.exceptions.RequestException as e:
             print(f"Request error: {e}")
             return None
+    
 
-    def clean_price(self, price_str: str) -> Optional[float]:
-        """Extract and clean price from string, returning float value."""
+    def clean_price(self, price_str: str, currency: str = 'USD') -> Tuple[Optional[float], str]:
+        """Extract and clean price from string, returning float value and currency."""
         if not price_str:
-            return None
+            return None, currency
+    
+        original_price = price_str
         print(f"Cleaning price: {price_str}")
-        price = re.sub(r'[^\d.,]', '', price_str)
+    
+        # Determine currency from string
+        if 'KSh' in price_str or 'Ksh' in price_str or 'KES' in price_str:
+            currency = 'KES'
+        elif '£' in price_str or 'GBP' in price_str:
+            currency = 'GBP'
+        elif '€' in price_str or 'EUR' in price_str:
+            currency = 'EUR'
+    
+        # Remove all non-numeric characters except periods and commas
+        digits_only = re.sub(r'[^\d.,]', '', price_str)
+    
         try:
-            price = price.replace(',', '.')
-            if price.count('.') > 1:
-                parts = price.split('.')
-                price = ''.join(parts[:-1]) + '.' + parts[-1]
-            return float(price)
-        except ValueError:
-            print(f"Could not parse price: {price_str}")
-            return None
+            # Special case handling for prices with scientific notation like 3.4963e+4
+            if 'e' in digits_only.lower():
+                result = float(digits_only)
+                print(f"Scientific notation detected: {digits_only} -> {result}")
+                return result, currency
+                
+            # Strategy 1: Detect format based on position of comma and period
+            last_comma_pos = digits_only.rfind(',')
+            last_period_pos = digits_only.rfind('.')
+            
+            # If both exist, the rightmost one is likely the decimal separator
+            if last_comma_pos > 0 and last_period_pos > 0:
+                if last_comma_pos > last_period_pos:
+                    # Comma is the decimal separator (European format)
+                    # Replace all periods (thousands separators)
+                    cleaned = digits_only.replace('.', '')
+                    # Replace comma with period for float conversion
+                    cleaned = cleaned.replace(',', '.')
+                else:
+                    # Period is the decimal separator (US format)
+                    # Remove all commas (thousands separators)
+                    cleaned = digits_only.replace(',', '')
+            elif last_comma_pos > 0:
+                # Only commas exist
+                # Check if it looks like a decimal separator (e.g., "34,96")
+                if len(digits_only) - last_comma_pos <= 3:
+                    # Likely a decimal comma
+                    cleaned = digits_only.replace(',', '.')
+                else:
+                    # Likely a thousands separator
+                    cleaned = digits_only.replace(',', '')
+            elif last_period_pos > 0:
+                # Only periods exist
+                # Keep as is, already in format for float conversion
+                cleaned = digits_only
+            else:
+                # No separators at all
+                cleaned = digits_only
+            
+            # Final check: if the number looks unreasonably large, try to correct it
+            # This is a heuristic to catch values like 349639.99 that should be 349.63 or 34.96
+            result = float(cleaned)
+            
+            # For typical online products, if price > 10000, it might be an error
+            if result > 10000 and '.' in cleaned:
+                # Try to see if moving the decimal point makes more sense
+                parts = cleaned.split('.')
+                if len(parts) == 2 and len(parts[0]) > 2:
+                    # Try different decimal places
+                    candidates = []
+                    # Try placing decimal point 2 positions from right in whole number part
+                    if len(parts[0]) > 2:
+                        test_price = float(parts[0][:-2] + '.' + parts[0][-2:] + parts[1])
+                        candidates.append((test_price, abs(test_price - 100)))  # Distance from typical price
+                    
+                    # Check if any candidate is more reasonable
+                    if candidates:
+                        candidates.sort(key=lambda x: x[1])  # Sort by reasonableness
+                        alternate_result = candidates[0][0]
+                        
+                        # If the alternate result is significantly different and more reasonable
+                        if alternate_result < result / 10:
+                            print(f"Price correction: {result} -> {alternate_result} (original: {original_price})")
+                            result = alternate_result
+
+            print(f"Parsed price: {result} {currency} (from {original_price})")
+            return result, currency
+        
+        except ValueError as e:
+            print(f"Could not parse price: {price_str}, error: {e}")
+            return None, currency
+
+
+
 
     def search_amazon(self, query: str) -> List[Dict]:
         """Search Amazon for products."""
@@ -100,11 +198,14 @@ class ProductScraper:
             product_url = urljoin(self.amazon_base_url, url_elem['href']) if url_elem else None
             
             if title_elem and price_elem and product_url:
-                price = self.clean_price(price_elem.text)
+                price, currency = self.clean_price(price_elem.text)
                 if price is not None:
+                    price_kes = price * self.usd_to_kes if currency == 'USD' else None
                     results.append({
                         'title': title_elem.text.strip(),
                         'price': price,
+                        'currency': currency,
+                        'price_kes': price_kes,
                         'description': '',
                         'source': 'Amazon',
                         'url': product_url
@@ -150,13 +251,135 @@ class ProductScraper:
             product_url = url_elem['href'] if url_elem else None
             
             if title_elem and price_elem and product_url:
-                price = self.clean_price(price_elem.text)
+                price, currency = self.clean_price(price_elem.text)
                 if price is not None:
+                    price_kes = price * self.usd_to_kes if currency == 'USD' else None
                     results.append({
                         'title': title_elem.text.strip(),
                         'price': price,
+                        'currency': currency,
+                        'price_kes': price_kes,
                         'description': '',
                         'source': 'eBay',
+                        'url': product_url
+                    })
+                    
+        return results
+
+    def search_jumia(self, query: str) -> List[Dict]:
+        """Search Jumia Kenya for products."""
+        url = f"https://www.jumia.co.ke/catalog/?q={quote_plus(query)}"
+        results = []
+    
+        html_content = self.make_request(url)
+        if not html_content:
+            return results
+        
+        soup = BeautifulSoup(html_content, 'html.parser')
+    
+        print("\nJumia Debug Info:")
+        print(f"Page title: {soup.title.string if soup.title else 'No title found'}")
+        
+        # Jumia product elements
+        products = (
+            soup.find_all('article', {'class': 'prd'}) or
+            soup.find_all('div', {'class': 'info'})
+        )
+    
+        print(f"Found {len(products)} products on Jumia")
+    
+        if len(products) == 0:
+            print("Sample of HTML received:")
+            print(soup.prettify()[:500])
+    
+        for product in products:
+            # Try different possible selectors for Jumia product info
+            title_elem = product.find('h3', {'class': 'name'})
+            price_elem = product.find('div', {'class': 'prc'})
+        
+        # Find product URL - safer approach
+        url_elem = product.find('a')
+        
+        # Debug the URL element
+        if url_elem:
+            print(f"URL element attributes: {url_elem.attrs}")
+            product_url = None
+            # Check if href exists before accessing it
+            if 'href' in url_elem.attrs:
+                product_url = urljoin(self.jumia_base_url, url_elem['href'])
+            else:
+                # Try to find parent with href if the direct element doesn't have it
+                parent_with_href = product.find_parent('a', href=True)
+                if parent_with_href:
+                    product_url = urljoin(self.jumia_base_url, parent_with_href['href'])
+        else:
+            product_url = None
+            print("No URL element found for this product")
+        
+        if title_elem and price_elem and product_url:
+            price, currency = self.clean_price(price_elem.text, 'KES')  # Jumia Kenya uses KES
+            if price is not None:
+                price_usd = price / self.usd_to_kes if currency == 'KES' else None
+                results.append({
+                    'title': title_elem.text.strip(),
+                    'price': price,
+                    'currency': currency,
+                    'price_usd': price_usd,
+                    'price_kes': price,  # Original price already in KES
+                    'description': '',
+                    'source': 'Jumia',
+                    'url': product_url
+                })
+                
+        return results
+
+
+    def search_kilimall(self, query: str) -> List[Dict]:
+        """Search Kilimall Kenya for products."""
+        url = f"https://www.kilimall.co.ke/new/commoditysearch?q={quote_plus(query)}"
+        results = []
+        
+        html_content = self.make_request(url)
+        if not html_content:
+            return results
+            
+        soup = BeautifulSoup(html_content, 'html.parser')
+        
+        print("\nKilimall Debug Info:")
+        print(f"Page title: {soup.title.string if soup.title else 'No title found'}")
+        
+        # Kilimall product elements
+        products = (
+            soup.find_all('div', {'class': 'item_box'}) or
+            soup.find_all('li', {'class': 'item'})
+        )
+        
+        print(f"Found {len(products)} products on Kilimall")
+        
+        if len(products) == 0:
+            print("Sample of HTML received:")
+            print(soup.prettify()[:500])
+        
+        for product in products:
+            title_elem = product.find('div', {'class': 'goods-name'})
+            price_elem = product.find('div', {'class': 'price'})
+            
+            # Find product URL
+            url_elem = product.find('a', {'class': 'goods-name-link'})
+            product_url = urljoin(self.kilimall_base_url, url_elem['href']) if url_elem else None
+            
+            if title_elem and price_elem and product_url:
+                price, currency = self.clean_price(price_elem.text, 'KES')  # Kilimall Kenya uses KES
+                if price is not None:
+                    price_usd = price / self.usd_to_kes if currency == 'KES' else None
+                    results.append({
+                        'title': title_elem.text.strip(),
+                        'price': price,
+                        'currency': currency,
+                        'price_usd': price_usd,
+                        'price_kes': price,  # Original price already in KES
+                        'description': '',
+                        'source': 'Kilimall',
                         'url': product_url
                     })
                     
@@ -170,14 +393,48 @@ class ProductScraper:
         print("\nSearching eBay...")
         ebay_results = self.search_ebay(query)
         
-        all_results = amazon_results + ebay_results
+        print("\nSearching Jumia...")
+        jumia_results = self.search_jumia(query)
+        
+        print("\nSearching Kilimall...")
+        kilimall_results = self.search_kilimall(query)
+        
+        all_results = amazon_results + ebay_results + jumia_results + kilimall_results
         
         if not all_results:
             print("\nNo results found with valid prices")
-            return pd.DataFrame(columns=['title', 'price', 'description', 'source', 'url'])
+            return pd.DataFrame(columns=['title', 'price', 'currency', 'price_usd', 'price_kes', 'description', 'source', 'url'])
             
         df = pd.DataFrame(all_results)
-        df = df.sort_values('price')
+        
+        # Format prices for display
+        if 'price_kes' in df.columns:
+            df['price_kes'] = df['price_kes'].apply(lambda x: f"{x:.2f} KES" if pd.notnull(x) else "N/A")
+        
+        if 'price_usd' in df.columns:
+            df['price_usd'] = df['price_usd'].apply(lambda x: f"{x:.2f} USD" if pd.notnull(x) else "N/A")
+            
+        # Format original prices with currency
+        df['display_price'] = df.apply(
+            lambda row: f"{row['price']:.2f} {row['currency']}", axis=1
+        )
+        
+        # Sort by price (convert all to USD for sorting)
+        if 'currency' in df.columns:
+            def get_usd_price(row):
+                if row['currency'] == 'USD':
+                    return row['price']
+                elif row['currency'] == 'KES':
+                    return row['price'] / self.usd_to_kes
+                else:
+                    return row['price']  # Fallback
+                    
+            df['sort_price'] = df.apply(get_usd_price, axis=1)
+            df = df.sort_values('sort_price')
+            df = df.drop('sort_price', axis=1)
+        else:
+            df = df.sort_values('price')
+            
         return df
 
 def main():
@@ -199,7 +456,10 @@ def main():
         pd.set_option('display.max_rows', None)
         pd.set_option('display.width', None)
         print("\nResults (sorted by price):")
-        print(results.to_string(index=False))
+        # Reorder columns for better display
+        display_cols = ['title', 'display_price', 'price_usd', 'price_kes', 'source', 'url']
+        display_cols = [col for col in display_cols if col in results.columns]
+        print(results[display_cols].to_string(index=False))
 
 if __name__ == "__main__":
     main()
