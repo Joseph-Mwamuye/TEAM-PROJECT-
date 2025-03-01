@@ -1,0 +1,64 @@
+/* Hero section styles */
+.hero {
+    display: flex;
+    flex-direction: row;
+    margin-right: 0%;
+    gap: 18rem;
+    margin-top: 4rem;
+    
+    padding: 20px;
+    align-items: center;
+    justify-content: center;
+
+
+}
+
+.hero-content {
+    font-family: "Poppins", sans-serif;
+  max-width: 500px;
+  text-align: left; /* Align text to the left */
+}
+
+.hero h1 {
+  font-size: 48px;
+  font-weight: 700;
+line-height: 72px;
+  margin-bottom: 20px;
+  letter-spacing: -0.02rem;
+}
+
+.hero span {
+  color: #E94F37; /* Highlighted word color */
+}
+
+.hero p {
+    width: 523px;
+height: 117px;
+
+font-family: 'Poppins';
+font-style: normal;
+font-weight: 400;
+font-size: 20px;
+line-height: 24px;
+letter-spacing: 0.01em;
+margin-bottom: 30px;
+}
+
+.cta-buttons {
+  display: flex;
+}
+
+
+
+.hero-image {
+  width: 499px; /* Adjust image width as needed */
+  height: 499px; /* Space between content and image */
+}
+
+.hero-image img {
+  max-width: 100%;
+  height: auto;
+
+  
+
+}
